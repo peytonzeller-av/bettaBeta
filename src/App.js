@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NextUIProvider } from "@nextui-org/system";
-import { Select, SelectSection, SelectItem } from "@nextui-org/react";
+import { Select, SelectSection, SelectItem, ScrollShadow, Listbox, ListboxItem } from "@nextui-org/react";
 import { createClient } from "@supabase/supabase-js";
 
 // public, every one has access to see
@@ -8,6 +8,7 @@ const supabase = createClient("https://isarqhfqrjfwjmbwwzwe.supabase.co", "eyJhb
 
 function App() {
   const [users, setUsers] = useState([]);
+  const [climbs, setClimbs] = useState([{ name: 'bone cholla', id: 1 }, { name: 'highlander', id: 2 }, { name: 'take from tap', id: 3 }])
 
   useEffect(() => {
     getUsers();
@@ -22,11 +23,11 @@ function App() {
   return (
     <NextUIProvider>
       <div class="h-screen">
-        <div class="h-3/6 grid grid-cols-6 gap-4 place-content-center">
-          <div class="col-start-2 col-span-4">  <h1 class="text-3xl font-bold underline text-slate-500 text-center">
-           Locals
+        <div class="h-4/6 grid grid-cols-6 gap-4 place-content-center">
+          <div class="col-start-2 col-span-4 max-w-lg">  <h1 class="text-3xl font-bold underline text-slate-500 text-center">
+            Locals
           </h1></div>
-          <div class="col-start-2 col-span-4">
+          <div class="col-start-2 col-span-4 max-w-lg">
             <Select
               label=""
             >
@@ -36,6 +37,30 @@ function App() {
                 </SelectItem>
               ))}
             </Select>
+          </div>
+          <div className="col-start-2 col-span-4 border-solid border-2 border-cactus rounded-md max-w-lg">
+            <Listbox
+              classNames={{
+                list: "max-h-[300px] overflow-scroll",
+              }}
+              defaultSelectedKeys={["1"]}
+              items={climbs}
+              label="Assigned to"
+              selectionMode="multiple"
+              onSelectionChange={(() => console.log('e'))}
+              variant="flat"
+            >
+              {(item) => (
+                <ListboxItem key={item.id} textValue={item.name}>
+                  <div className="flex gap-6 items-center">
+                    <div className="flex flex-col">
+                      <span className="text-small">{item.name}</span>
+                      <span className="text-tiny text-default-400">{item.id}</span>
+                    </div>
+                  </div>
+                </ListboxItem>
+              )}
+            </Listbox>
           </div>
         </div>
       </div>
