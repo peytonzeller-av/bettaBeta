@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { NextUIProvider } from "@nextui-org/system";
+import { Select, SelectSection, SelectItem } from "@nextui-org/react";
 import { createClient } from "@supabase/supabase-js";
 
 // public, every one has access to see
@@ -18,11 +20,26 @@ function App() {
   }
 
   return (
-    <ul>
-      {users.map((user) => (
-        <li key={user.full_name}>{user.full_name}</li>
-      ))}
-    </ul>
+    <NextUIProvider>
+      <div class="h-screen">
+        <div class="h-3/6 grid grid-cols-6 gap-4 place-content-center">
+          <div class="col-start-2 col-span-4">  <h1 class="text-3xl font-bold underline text-slate-500 text-center">
+           Locals
+          </h1></div>
+          <div class="col-start-2 col-span-4">
+            <Select
+              label=""
+            >
+              {users.map((user) => (
+                <SelectItem key={user.user_id} value={user.full_name}>
+                  {user.full_name}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
+        </div>
+      </div>
+    </NextUIProvider >
   );
 }
 
