@@ -8,18 +8,76 @@ const supabase = createClient("https://isarqhfqrjfwjmbwwzwe.supabase.co", "eyJhb
 
 function App() {
   const [users, setUsers] = useState([]);
-  const [climbs, setClimbs] = useState([{ name: 'bone cholla', id: 1 }, { name: 'highlander', id: 2 }, { name: 'take from tap', id: 3 }])
-  const [areas, setAreas] = useState([{ name: 'la mesilla', id: 1 }])
+  const [selectedUser, setSelectedUser] = useState('');
+  const [climbs, setClimbs] = useState([])
+  const [zones, setZones] = useState([])
 
   useEffect(() => {
     getUsers();
+    getZones();
   }, []);
 
-  async function getUsers() {
+  useEffect(() => {
+    if (selectedUser) {
+      // call supabase and get all climbs for a given user
+      getAllClimbsForSelectedUser();
+    }
+  }, [selectedUser])
+
+  const getAllClimbsForSelectedUser = async () => {
+    const response = await supabase.from('ClimbsUsers').select(`
+id,
+climb_id,
+user_id,
+sent,
+Climbs (
+climb_id,
+climb_name,
+grade
+)
+`).eq('user_id', selectedUser)
+    if (Array.isArray(response?.data)) {
+      const { data } = response;
+      const allClimbs = data.reduce((acc, curr) => {
+        if (curr?.Climbs) {
+          acc.push({ ...curr?.Climbs, sent: curr?.sent })
+        }
+        return acc;
+      }, [])
+      setClimbs(allClimbs);
+      return;
+    }
+    setClimbs([])
+  }
+
+  const getUsers = async () => {
     const { data } = await supabase.from("Users").select(); // TODO
     console.log('Users: ', data)
     setUsers(data);
   }
+
+  const getZones = async () => {
+    const { data } = await supabase.from("Zones").select(); // TODO
+    console.log('Zones: ', data)
+    setZones(data);
+  }
+
+  const setUser = (event) => {
+    if (event?.target?.value) {
+      // sets the user id
+      setSelectedUser(event?.target?.value)
+    }
+  }
+
+  const getProgressValue = () => {
+    if (Array.isArray(climbs) && climbs?.length) {
+      const sentClimbs = climbs.filter(climb => climb.sent);
+      return sentClimbs?.length ? sentClimbs?.length / climbs?.length : 0;
+    }
+    return 0;
+  }
+
+  const progressValue = getProgressValue();
 
   return (
     <NextUIProvider>
@@ -33,22 +91,26 @@ function App() {
             color="primary"
             className="max-w-lg"
             variant="bordered"
+            selectedKeys={[selectedUser]}
+            onChange={setUser}
           >
+            {/* USERS */}
             {users.map((user) => (
               <SelectItem key={user.user_id} value={user.full_name}>
                 {user.full_name}
               </SelectItem>
             ))}
           </Select>
+          {/* ZONES */}
           <Select
             label=""
             color="primary"
             className="max-w-lg"
             variant="bordered"
           >
-            {areas.map((area) => (
-              <SelectItem key={area.id} value={area.name}>
-                {area.name}
+            {zones.map((zone) => (
+              <SelectItem key={zone.zone_id} value={zone.zone_name}>
+                {zone.zone_name}
               </SelectItem>
             ))}
           </Select>
@@ -56,8 +118,10 @@ function App() {
             isStriped
             aria-label="Loading..."
             color="primary"
-            value={60}
+            value={getProgressValue()} // TODO: Remove hardcoded value
             className="max-w-lg"
+            isIndeterminate={!selectedUser}
+            maxValue={1}
           />
           <Listbox
             classNames={{
@@ -70,13 +134,14 @@ function App() {
             onSelectionChange={(() => console.log('e'))}
             variant="flat"
             className="row-auto border-solid border-2 border-cactus rounded-md max-w-lg"
+            emptyContent="nada..." // TODO: Center this text
           >
-            {(item) => (
-              <ListboxItem key={item.id} textValue={item.name}>
+            {(climb) => (
+              <ListboxItem key={climb.climb_id} textValue={climb.climb_name}>
                 <div className="flex gap-6 items-center">
                   <div className="flex flex-col">
-                    <span className="text-small">{item.name}</span>
-                    <span className="text-tiny text-default-400">{item.id}</span>
+                    <span className="text-small">{climb.climb_name}</span>
+                    <span className="text-tiny text-default-400">{climb.grade}</span>
                   </div>
                 </div>
               </ListboxItem>
