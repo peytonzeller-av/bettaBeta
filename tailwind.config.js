@@ -11,18 +11,37 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: {
-          DEFAULT: "##DB0101",
-          foreground: "##DB0101",
-        },
-        focus: "##DB0101",
         'cactus': '#BADB2B',
+        'cactus2': '#a7c427'
       },
       borderColor: theme => ({
         ...theme('colors'),
       })
-    }
+    },
   },
   darkMode: "class",
-  plugins: [nextui()],
+  plugins: [
+    nextui({
+      themes: {
+        light: {
+          colors: {
+            primary: {
+              DEFAULT: "#BADB2B",
+              foreground: "#000000",
+            },
+            focus: "#BEF264",
+          },
+        },
+        dark: {
+          colors: {
+            primary: {
+              DEFAULT: "#BADB2B",
+              foreground: "#000000",
+            },
+            focus: "#BEF264",
+          },
+        }
+      },
+    }),
+  ],
 };

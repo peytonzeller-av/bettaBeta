@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NextUIProvider } from "@nextui-org/system";
-import { Select, SelectSection, SelectItem, ScrollShadow, Listbox, ListboxItem, Progress } from "@nextui-org/react";
+import { Select, SelectSection, SelectItem, ScrollShadow, Listbox, ListboxItem, Progress, Button } from "@nextui-org/react";
 import { createClient } from "@supabase/supabase-js";
 
 // public, every one has access to see
@@ -25,13 +25,14 @@ function App() {
     <NextUIProvider>
       <div class="h-screen w-screen">
         <div class="h-4/6 w-full flex flex-col justify-center gap-4 items-center">
-          {<div class="max-w-lg">  <h1 class="text-3xl font-bold underline text-slate-500 text-center">
+          {<div class="max-w-lg">  <h1 class="text-cactus2 text-3xl font-bold underline text-slate-500 text-center">
             Locals
           </h1></div>}
           <Select
             label=""
             color="primary"
             className="max-w-lg"
+            variant="bordered"
           >
             {users.map((user) => (
               <SelectItem key={user.user_id} value={user.full_name}>
@@ -43,6 +44,7 @@ function App() {
             label=""
             color="primary"
             className="max-w-lg"
+            variant="bordered"
           >
             {areas.map((area) => (
               <SelectItem key={area.id} value={area.name}>
