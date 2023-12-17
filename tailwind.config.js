@@ -11,6 +11,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        primary: {
+          DEFAULT: "##DB0101",
+          foreground: "##DB0101",
+        },
+        focus: "##DB0101",
         'cactus': '#BADB2B',
       },
       borderColor: theme => ({
