@@ -45,7 +45,8 @@ grade
         }
         return acc;
       }, [])
-      setClimbs(allClimbs);
+      const orderedClimbs = allClimbs.sort((a, b) => b.grade - a.grade);
+      setClimbs(orderedClimbs);
       return;
     }
     setClimbs([])
