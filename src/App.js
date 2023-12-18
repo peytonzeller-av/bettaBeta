@@ -146,7 +146,7 @@ grade
           />
           <Listbox
             classNames={{
-              list: "overflow-scroll",
+              list: "overflow-scroll max-h-96",
             }}
             defaultSelectedKeys={["1"]}
             items={showProgress ? climbs : []}
