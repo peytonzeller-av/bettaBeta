@@ -9,6 +9,7 @@ const supabase = createClient("https://isarqhfqrjfwjmbwwzwe.supabase.co", "eyJhb
 function App() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState('');
+  const [selectedZone, setSelectedZone] = useState('')
   const [climbs, setClimbs] = useState([])
   const [zones, setZones] = useState([])
 
@@ -69,6 +70,13 @@ grade
     }
   }
 
+  const setZone = (event) => {
+    if (event?.target?.value) {
+      // sets the zone id
+      setSelectedZone(event?.target?.value)
+    }
+  }
+
   const getProgressValue = () => {
     if (Array.isArray(climbs) && climbs?.length) {
       const sentClimbs = climbs.filter(climb => climb.sent);
@@ -77,12 +85,21 @@ grade
     return 0;
   }
 
-  const progressValue = getProgressValue();
+  const getSentClimbs = () => {
+    if (Array.isArray(climbs) && climbs?.length) {
+      const sentClimbs = climbs.filter(climb => climb.sent);
+      return sentClimbs?.length ? sentClimbs.map(climb => climb.climb_id?.toString()) : [];
+    }
+    return []
+  }
+
+  const showProgress = selectedUser && selectedZone;
 
   return (
     <NextUIProvider>
       <div class="h-screen w-screen">
-        <div class="h-4/6 w-full flex flex-col justify-center gap-4 items-center">
+        {/* TODO: Condionally render climbs length h-full vs h-4/6 */}
+        <div class="h-full w-full flex flex-col justify-center gap-4 items-center">
           {<div class="max-w-lg">  <h1 class="text-cactus2 text-3xl font-bold underline text-slate-500 text-center">
             Locals
           </h1></div>}
@@ -107,6 +124,8 @@ grade
             color="primary"
             className="max-w-lg"
             variant="bordered"
+            selectedKeys={[selectedZone]}
+            onChange={setZone}
           >
             {zones.map((zone) => (
               <SelectItem key={zone.zone_id} value={zone.zone_name}>
@@ -115,22 +134,25 @@ grade
             ))}
           </Select>
           <Progress
+            label={showProgress ? 'Progress:' : ''}
             isStriped
             aria-label="Loading..."
             color="primary"
             value={getProgressValue()} // TODO: Remove hardcoded value
             className="max-w-lg"
-            isIndeterminate={!selectedUser}
+            isIndeterminate={!showProgress}
             maxValue={1}
+            showValueLabel={showProgress}
           />
           <Listbox
             classNames={{
-              list: "max-h-[300px] overflow-scroll",
+              list: "overflow-scroll",
             }}
             defaultSelectedKeys={["1"]}
-            items={climbs}
+            items={showProgress ? climbs : []}
             label="Assigned to"
             selectionMode="multiple"
+            selectedKeys={getSentClimbs()}
             onSelectionChange={(() => console.log('e'))}
             variant="flat"
             className="row-auto border-solid border-2 border-cactus rounded-md max-w-lg"
